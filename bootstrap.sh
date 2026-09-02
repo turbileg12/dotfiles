@@ -178,7 +178,7 @@ step "Packages (Brewfile)"
 if (( ! DO_BREW )); then
   skip "brew bundle (--skip-brew)"
 elif have brew; then
-  run brew bundle --file="$DOTFILES/Brewfile" --no-lock || warn "brew bundle бүрэн дуусаагүй — дээрх алдааг үзнэ үү"
+  run brew bundle --file="$DOTFILES/Brewfile" || warn "brew bundle бүрэн дуусаагүй — дээрх алдааг үзнэ үү"
   ok "Brewfile боловсруулав"
 else
   warn "brew байхгүй тул package суулгацыг алгаслаа"
@@ -337,8 +337,10 @@ step "Login shell"
 ZSH_BIN="$(command -v zsh || true)"
 if [[ -z $ZSH_BIN ]]; then
   warn "zsh байхгүй"
-elif [[ ${SHELL:-} == "$ZSH_BIN" ]]; then
-  ok "zsh аль хэдийн login shell"
+elif [[ "$(basename "${SHELL:-}")" == zsh ]]; then
+  # Login shell аль хэдийн zsh бол ХҮРЭХГҮЙ. brew-ийн zsh рүү солих нь эрсдэлтэй:
+  # /etc/shells-д байдаггүй бөгөөд Homebrew-гүй үед нэвтрэлт бүтэлгүйтэж болно.
+  ok "zsh аль хэдийн login shell (${SHELL:-})"
 else
   if ! grep -qxF "$ZSH_BIN" /etc/shells 2>/dev/null; then
     if [[ -n $SUDO || $EUID -eq 0 ]]; then
