@@ -131,4 +131,6 @@ p10k-recustomize && exec zsh     # өөрчлөлтүүдийг буцааж т�
 | Дээрх `curl \| bash` мөр цэвэр container дээр | ✅ 17/17 — GitHub-аас clone → бүрэн угсралт |
 | Дахин ажиллуулалт (idempotent) | ✅ хоёр дахь удаад юу ч өөрчлөгдөхгүй |
 | macOS дуураймал (`gfind`/`gls`/`pbcopy` shim) | ✅ хэрэгслээ зөв сонгож байна |
+| Цэвэр container, sudo-**той** | ✅ build-essential суугаад 5 parser бүгд баригдав, nvim алдаагүй |
+| Цэвэр container, sudo-**гүй** (compiler алга) | ✅ тодорхой анхааруулаад алгасана, nvim мөн алдаагүй |
 | macOS | ⚠️ **бодит Mac дээр хараахан ажиллуулж үзээгүй.** `gfind`/`gls`, `pbcopy`, `java_home` замууд код дотор бэлэн. Эхний удаа `--dry-run`-аар шалгаад ажиллуулна уу. |
