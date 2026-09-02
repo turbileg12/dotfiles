@@ -1,0 +1,28 @@
+#!/bin/sh
+# tmux-clip copy   : stdin  -> системийн clipboard
+# tmux-clip paste  : clipboard -> stdout
+#
+# Ажиллах орчноо өөрөө таана: macOS (pbcopy) → Wayland (wl-copy) →
+# X11 (xclip → xsel). Аль нь ч байхгүй бол (headless сервер) чимээгүй унана,
+# tmux-ийн дотоод буфер хэвээр ажиллана.
+
+if command -v pbcopy >/dev/null 2>&1; then
+  COPY='pbcopy'; PASTE='pbpaste'
+elif [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-copy >/dev/null 2>&1; then
+  COPY='wl-copy'; PASTE='wl-paste --no-newline'
+elif command -v xclip >/dev/null 2>&1; then
+  COPY='xclip -selection clipboard -i'; PASTE='xclip -selection clipboard -o'
+elif command -v xsel >/dev/null 2>&1; then
+  COPY='xsel --clipboard --input'; PASTE='xsel --clipboard --output'
+elif command -v wl-copy >/dev/null 2>&1; then
+  COPY='wl-copy'; PASTE='wl-paste --no-newline'
+else
+  COPY='cat >/dev/null'; PASTE='true'
+fi
+
+case "${1:-}" in
+  copy)  exec sh -c "$COPY" ;;
+  paste) exec sh -c "$PASTE" ;;
+  which) printf 'copy=%s\npaste=%s\n' "$COPY" "$PASTE" ;;
+  *)     echo "usage: tmux-clip {copy|paste|which}" >&2; exit 2 ;;
+esac

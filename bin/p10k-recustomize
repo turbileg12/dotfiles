@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+"""p10k configure-ийн дараа тохиргоог дахин хэрэглэнэ.
+
+  p10k-recustomize              өнгө + хүрээ (анхдагч)
+  p10k-recustomize --segments   дээрээс нь бүх сегментийг асаана
+  p10k-recustomize FILE ...     өөр файл дээр ажиллуулна
+"""
+import re, sys, os
+
+args   = [a for a in sys.argv[1:] if not a.startswith("-")]
+SEGS   = "--segments" in sys.argv
+PATH   = os.path.expanduser(args[0] if args else "~/.p10k.zsh")
+MARK   = "# p10k-recustomize: applied"
+SKIP   = {"example", "public_ip", "vi_mode"}
+FRAME  = 250
+
+def rgb(i):
+    if not 16 <= i <= 231: return None
+    v = i - 16
+    return (v // 36, (v % 36) // 6, v % 6)
+
+def brighter(i):
+    """ногоон/цэнхэрийг нэг зэрэг тод болгоно, бусдыг хөндөхгүй"""
+    c = rgb(i)
+    if c is None: return None
+    r, g, b = c
+    if r == g == b:        return None   # саарал
+    if r > g and b > g:    return None   # нил ягаан
+    if r >= g and r >= b:  return None   # улаан / улбар / шар
+    if max(c) >= 5:        return None   # аль хэдийн дээд тод
+    return 16 + 36*(min(5, r+1) if r else 0) + 6*(min(5, g+1) if g else 0) + (min(5, b+1) if b else 0)
+
+src = open(PATH).read()
+if MARK in src:
+    print("аль хэдийн хийгдсэн — өөрчлөлт хийгээгүй"); sys.exit(0)
+
+n_seg = 0
+if SEGS:
+    def enable(m):
+        head, body = m.group(1), m.group(2)
+        body = re.sub(r'(?m)^    # ([a-z_]+)( +)', r'    \1\2  ', body)
+        for s in SKIP:
+            body = re.sub(r'(?m)^    %s( +)  ' % s, r'    # %s\1' % s, body)
+        return head + body
+    src = re.sub(r'(POWERLEVEL9K_(?:LEFT|RIGHT)_PROMPT_ELEMENTS=\(\n)((?:.*\n)*?)(?=  \))', enable, src)
+    for blk in re.findall(r'POWERLEVEL9K_(?:LEFT|RIGHT)_PROMPT_ELEMENTS=\(\n((?:.*\n)*?)  \)', src):
+        n_seg += len(re.findall(r'(?m)^    [a-z_]+ ', blk))
+
+changed = {}
+def eq(m):
+    i = int(m.group(2)); t = brighter(i)
+    if t is None: return m.group(0)
+    changed[i] = t; return m.group(1) + str(t)
+def pct(m):
+    i = int(m.group(1)); t = brighter(i)
+    if t is None: return m.group(0)
+    changed[i] = t; return '%%%dF' % t
+# нэрэнд {A,B} хаалт байж болно
+src = re.sub(r'(?m)^(\s*typeset -g POWERLEVEL9K_[A-Z_0-9{},]*(?:FOREGROUND|BACKGROUND|COLOR)=)(\d+)\s*$', eq, src)
+src = re.sub(r'%(\d+)F', pct, src)
+
+src = re.sub(r"(MULTILINE_(?:FIRST|NEWLINE|LAST)_PROMPT_(?:PREFIX|SUFFIX)='%)\d+F", r'\g<1>%dF' % FRAME, src)
+src = re.sub(r'(MULTILINE_FIRST_PROMPT_GAP_FOREGROUND=)\d+', r'\g<1>%d' % FRAME, src)
+
+open(PATH, "w").write(src.rstrip("\n") + "\n\n" + MARK + "\n")
+print("өнгө: %d ширхэг   хүрээ: %d%s" % (len(changed), FRAME,
+      ("   сегмент: %d" % n_seg) if SEGS else "   сегмент: хөндөөгүй"))

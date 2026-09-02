@@ -1,0 +1,11 @@
+# ~/.zshrc.local — машин тус бүрд тусдаа. Git-д ХЭЗЭЭ Ч оруулахгүй.
+# ~/.zshrc-ийн хамгийн сүүлд source хийгддэг.
+
+# --- Maven / Nexus -------------------------------------------------------
+export MAVEN_USERNAME="admin"
+export MAVEN_PASSWORD="<заавал нөхөх>"
+export NEXUS_TOKEN="<заавал нөхөх>"
+
+# --- Энэ машинд л хамаатай бусад зүйл -----------------------------------
+# export SOME_API_KEY="..."
+# alias deploy='...'

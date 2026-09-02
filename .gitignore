@@ -1,0 +1,11 @@
+# Машин-тусгай / нууц зүйлс
+*.local
+.zshrc.local
+.gitconfig.local
+
+# OS хог
+.DS_Store
+Thumbs.db
+
+# Татаж авсан түр файлууд
+.cache/

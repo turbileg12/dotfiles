@@ -1,0 +1,11 @@
+[user]
+	email = turbileg@andsystems.tech
+	name = Turbileg
+[blame]
+	date = relative
+[alias]
+    today = log --since=midnight --author='turbileg' --oneline --stat
+    me = log --author='turbileg' --oneline --stat --pretty
+    asdf = diff origin/master
+[include]
+	path = ~/.gitconfig.local
