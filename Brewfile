@@ -13,6 +13,11 @@ brew "jq"
 brew "tree"
 brew "htop"
 
+# nvim-ийн LSP: init.vim дэх `vim.lsp.enable({'jdtls','ts_ls'})` эдгээрийг
+# PATH дээр байхыг шаарддаг. Байхгүй бол `gd` (тодорхойлолт руу үсрэх) ажиллахгүй.
+brew "jdtls"
+brew "typescript-language-server"
+
 if OS.mac?
   # ЗААВАЛ: shell/fzf.zsh, shell/functions.zsh нь GNU find/ls-ийн
   # `-printf`, `--group-directories-first` флагуудыг ашигладаг. Эдгээр нь
@@ -23,6 +28,9 @@ if OS.mac?
 end
 
 if OS.linux?
-  # nvim-treesitter parser-уудаа эндээс compile хийнэ.
+  # ЖИЧ: brew-ийн gcc нь ЗӨВХӨН `gcc-16` гэх хувилбартай нэр өгдөг — treesitter
+  # нь `cc`/`gcc`/`clang` хайдаг тул үүнийг дангаар нь ОЛОХГҮЙ. Жинхэнэ шийдлийг
+  # bootstrap.sh-ийн `ensure_cc` хийнэ (build-essential эсвэл $CC). Энэ нь нөөц.
   brew "gcc"
+  brew "make"
 end

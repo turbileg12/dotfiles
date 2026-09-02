@@ -59,6 +59,38 @@ FONT_ASSET="JetBrainsMono"            # Nerd Fonts release дэх zip-ийн н�
 FONT_FAMILY="JetBrainsMono Nerd Font" # fontconfig / gnome-terminal-ын нэр
 ```
 
+## Юу автоматаар суух вэ
+
+`bootstrap.sh` дараахыг бүрэн автоматаар хийнэ:
+
+- **Config-ууд** — repo-г `~/.dotfiles` руу clone хийж, `~/.zshrc`, `~/.tmux.conf`,
+  `~/.p10k.zsh`, `~/.gitconfig`, `~/.config/nvim/init.vim` бүгдийг symlink болгоно.
+- **zsh** — oh-my-zsh + powerlevel10k (wizard дуудахгүй, бэлэн `.p10k.zsh`-ыг л тавина).
+- **nvim** — vim-plug + `init.vim` дэх бүх 20 plugin (`PlugInstall --sync`),
+  дараа нь treesitter parser-ууд (`java xml yaml json sql`).
+- **tmux** — tpm + dracula, tmux-resurrect, tmux-continuum.
+- **Package-ууд** — `Brewfile` (nvim, tmux, fzf, bat, rg, fd, jq… + `jdtls`,
+  `typescript-language-server`).
+
+### C compiler — анхаарах цэг
+
+treesitter parser бүр эх кодоос compile хийгддэг ба nvim нь `cc`, `gcc`, `clang`
+гэсэн нэрсийг хайдаг. **Homebrew-ийн `gcc` нь зөвхөн `gcc-16` гэх хувилбартай нэр
+өгдөг тул үүнд хүрэлцэхгүй.** `bootstrap.sh` үүнийг мэдэж:
+
+1. `cc`/`gcc`/`clang` байвал юу ч хийхгүй;
+2. Linux дээр sudo байвал `build-essential` суулгана;
+3. үгүй бол brew-ийн `gcc-NN`-ыг `$CC` болгоно;
+4. аль нь ч бүтэхгүй бол **анхааруулаад үргэлжилнэ** — `init.vim` нь compiler
+   байхгүйг мэдэж parser автомат суулгацаа унтраадаг тул алдаа хэвлэхгүй.
+
+### nvim хувилбар
+
+`init.vim` дэх `vim.lsp.enable()` ба `nvim-lspconfig` нь **nvim 0.11+** шаарддаг.
+Ubuntu 24.04-ийн apt нь 0.9.5 өгдөг. Хуучин nvim дээр эдгээр хэсэг өөрөө
+**идэвхгүй болно** (алдаа хэвлэхгүй), бусад бүх зүйл ажиллана. Бүрэн боломжийг
+авах бол nvim-ээ Homebrew-ээс авна — `Brewfile` яг тэгдэг.
+
 ## Платформын ялгаа
 
 | Зүйл | Linux | macOS |

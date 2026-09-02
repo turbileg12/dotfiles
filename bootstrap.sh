@@ -277,6 +277,31 @@ fi
 
 # -------------------------------------------------------------- 8. nvim -----
 step "Neovim"
+
+# nvim-treesitter нь parser бүрийг эх кодоос compile хийдэг ба `cc`/`gcc`/`clang`
+# хайдаг. brew-ийн gcc нь ЗӨВХӨН `gcc-16` гэх нэр өгдөг тул үүнд хүрэлцэхгүй.
+ensure_cc() {
+  if have cc || have gcc || have clang; then return 0; fi
+  if [[ $OS == linux ]] && have apt-get && [[ -n $SUDO || $EUID -eq 0 ]]; then
+    if run $SUDO apt-get install -y -qq build-essential; then
+      ok "build-essential суулгав (treesitter-т шаардлагатай)"; return 0
+    fi
+  fi
+  # Нөөц: brew-ийн хувилбартай gcc-г $CC болгож өгнө.
+  local cands=("${HOMEBREW_PREFIX:-/nonexistent}"/bin/gcc-[0-9]*)
+  if [[ -x ${cands[0]:-} ]]; then
+    export CC="${cands[0]}"
+    ok "C compiler: $CC ( \$CC-гээр дамжуулав )"
+    return 0
+  fi
+  return 1
+}
+if ensure_cc; then
+  :
+else
+  warn "C compiler алга — treesitter parser-ууд суухгүй (highlight сул байна). Засах: sudo apt install build-essential"
+fi
+
 if have nvim; then
   PLUG="$HOME/.local/share/nvim/site/autoload/plug.vim"
   if [[ -f $PLUG ]]; then

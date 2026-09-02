@@ -49,17 +49,29 @@ Plug 'sainnhe/sonokai'
 Plug 'rebelot/kanagawa.nvim'
 
 " gd buyu eh function ruu shiljine
-Plug 'neovim/nvim-lspconfig'
+" nvim 0.11-ээс доош хувилбарт lspconfig нь vim.uv дээр унадаг (apt-ийн nvim
+" ихэвчлэн 0.9). Тиймээс хуучин nvim дээр огт ачаалахгүй.
+if has('nvim-0.11')
+  Plug 'neovim/nvim-lspconfig'
+endif
 call plug#end() 
 
 lua << EOF
+-- Parser-ууд эх кодоос compile хийгддэг. C compiler байхгүй бол
+-- treesitter файл нээх бүрт алдаа хэвлэдэг тул тэр үед автомат суулгацыг унтраана.
+local has_cc = vim.fn.executable('cc') == 1
+        or vim.fn.executable('gcc') == 1
+        or vim.fn.executable('clang') == 1
 require('nvim-treesitter.configs').setup({
-	ensure_installed = { 'java', 'xml', 'yaml', 'json', 'sql' },
+	ensure_installed = has_cc and { 'java', 'xml', 'yaml', 'json', 'sql' } or {},
 	highlight = { enable = true },
 })
 
 -- LSP: gd = go to definition (needs the language servers on PATH)
-vim.lsp.enable({ 'jdtls', 'ts_ls' })
+-- vim.lsp.enable() нь nvim 0.11+ дээр л байдаг.
+if vim.fn.has('nvim-0.11') == 1 then
+  vim.lsp.enable({ 'jdtls', 'ts_ls' })
+end
 
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(ev)
