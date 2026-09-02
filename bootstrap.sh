@@ -352,8 +352,10 @@ ok "clipboard backend: ${CLIP_INFO%%$'\n'*}"
 step "Claude Code CLI"
 if (( ! DO_CLAUDE )); then
   skip "Claude Code (--no-claude)"
-elif have claude; then
-  ok "claude аль хэдийн байна ($(claude --version 2>/dev/null | head -1))"
+elif have claude || [[ -x $HOME/.local/bin/claude ]]; then
+  # ЖИЧ: bootstrap нь bash дотор ажилладаг ба ~/.local/bin нь zsh-ийн PATH-д л
+  # ордог тул `have claude` дангаараа хангалтгүй — файлыг нь шууд шалгана.
+  ok "claude аль хэдийн байна ($("${HOME}/.local/bin/claude" --version 2>/dev/null | head -1))"
 else
   # Native installer. npm/brew БИШ: ~/.local/share/claude/versions/ дотор
   # хувилбар бүрийг хадгалж, ~/.local/bin/claude-г түүн рүү заана. Өөрөө
