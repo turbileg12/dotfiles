@@ -133,4 +133,7 @@ p10k-recustomize && exec zsh     # өөрчлөлтүүдийг буцааж т�
 | macOS дуураймал (`gfind`/`gls`/`pbcopy` shim) | ✅ хэрэгслээ зөв сонгож байна |
 | Цэвэр container, sudo-**той** | ✅ build-essential суугаад 5 parser бүгд баригдав, nvim алдаагүй |
 | Цэвэр container, sudo-**гүй** (compiler алга) | ✅ тодорхой анхааруулаад алгасана, nvim мөн алдаагүй |
+| Plugin-ууд гүнзгий шалгалт | ✅ бүх plugin дүүрэн, `vimproc` make хийгдсэн, `fzf#install` биелсэн, 5 parser баригдсан, `PlugStatus` цэвэр |
+| Жинхэнэ pty дотор `:FZF`, `Ctrl-P`, `:Tagbar`, `:Unite`, `:VimFilerExplorer` | ✅ бүгд ажиллана |
+| tmux plugin-ууд ачаалагдсан эсэх | ✅ dracula status-left идэвхтэй, resurrect товчнууд холбогдсон |
 | macOS | ⚠️ **бодит Mac дээр хараахан ажиллуулж үзээгүй.** `gfind`/`gls`, `pbcopy`, `java_home` замууд код дотор бэлэн. Эхний удаа `--dry-run`-аар шалгаад ажиллуулна уу. |
