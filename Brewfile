@@ -15,6 +15,9 @@ brew "htop"
 
 # nvim-ийн LSP: init.vim дэх `vim.lsp.enable({'jdtls','ts_ls'})` эдгээрийг
 # PATH дээр байхыг шаарддаг. Байхгүй бол `gd` (тодорхойлолт руу үсрэх) ажиллахгүй.
+# tagbar (<F8>) нь ctags-гүйгээр "Exuberant ctags not found!" гэж унадаг.
+brew "universal-ctags"
+
 brew "jdtls"
 brew "typescript-language-server"
 
