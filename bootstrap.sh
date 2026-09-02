@@ -14,6 +14,7 @@
 #   --desktop     Desktop гэж албадах (font, dconf-ыг заавал хийх)
 #   --no-fonts    Зөвхөн font суулгацыг алгасах
 #   --skip-brew   Homebrew болон package суулгацыг алгасах
+#   --no-claude   Claude Code CLI-г суулгахгүй
 #   -h | --help
 #
 # Дахин дахин ажиллуулж болно (idempotent). Байгаа файлыг дарж бичихийн өмнө
@@ -35,7 +36,7 @@ FONT_SIZE="${FONT_SIZE:-12}"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 # ------------------------------------------------------------------ флагууд --
-DRY_RUN=0; FORCE_PROFILE=""; DO_FONTS=1; DO_BREW=1
+DRY_RUN=0; FORCE_PROFILE=""; DO_FONTS=1; DO_BREW=1; DO_CLAUDE=1
 for arg in "$@"; do
   case "$arg" in
     --dry-run)   DRY_RUN=1 ;;
@@ -43,6 +44,7 @@ for arg in "$@"; do
     --desktop)   FORCE_PROFILE=desktop ;;
     --no-fonts)  DO_FONTS=0 ;;
     --skip-brew) DO_BREW=0 ;;
+    --no-claude) DO_CLAUDE=0 ;;
     -h|--help)   sed -n '2,25p' "${BASH_SOURCE[0]:-$0}" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Танихгүй флаг: $arg (--help үзнэ үү)" >&2; exit 2 ;;
   esac
@@ -346,7 +348,24 @@ CLIP_BIN="$HOME/.local/bin/tmux-clip"; [[ -x $CLIP_BIN ]] || CLIP_BIN="$DOTFILES
 CLIP_INFO="$("$CLIP_BIN" which 2>/dev/null || true)"
 ok "clipboard backend: ${CLIP_INFO%%$'\n'*}"
 
-# ------------------------------------------------------ 10. terminal --------
+# ------------------------------------------------------ 10. claude ----------
+step "Claude Code CLI"
+if (( ! DO_CLAUDE )); then
+  skip "Claude Code (--no-claude)"
+elif have claude; then
+  ok "claude аль хэдийн байна ($(claude --version 2>/dev/null | head -1))"
+else
+  # Native installer. npm/brew БИШ: ~/.local/share/claude/versions/ дотор
+  # хувилбар бүрийг хадгалж, ~/.local/bin/claude-г түүн рүү заана. Өөрөө
+  # шинэчилдэг тул энэ symlink-д bootstrap хүрэхгүй.
+  if run bash -c 'curl -fsSL https://claude.ai/install.sh | bash'; then
+    ok 'Claude Code суулгав — эхний удаа claude гэж ажиллуулж нэвтэрнэ'
+  else
+    warn "Claude Code суулгаж чадсангүй. Гараар: curl -fsSL https://claude.ai/install.sh | bash"
+  fi
+fi
+
+# ------------------------------------------------------ 11. terminal --------
 step "Терминалын профайл"
 if [[ $PROFILE == desktop && $OS == linux ]] && have dconf && have gsettings; then
   if run dconf load /org/gnome/terminal/ < "$DOTFILES/terminal/gnome-terminal.dconf"; then
@@ -368,7 +387,7 @@ else
   skip "Терминалын профайл (profile=$PROFILE)"
 fi
 
-# ------------------------------------------------------ 11. login shell -----
+# ------------------------------------------------------ 12. login shell -----
 step "Login shell"
 ZSH_BIN="$(command -v zsh || true)"
 if [[ -z $ZSH_BIN ]]; then
@@ -390,7 +409,7 @@ else
   fi
 fi
 
-# --------------------------------------------------------- 12. secrets ------
+# --------------------------------------------------------- 13. secrets ------
 step "Машин-тусгай тохиргоо"
 # shellcheck disable=SC2088  # доорх `~` нь зам биш, дэлгэцэнд харуулах текст
 if [[ -f $HOME/.zshrc.local ]]; then
@@ -401,7 +420,7 @@ else
   warn "~/.zshrc.local үүсгэв — token/нууц үгээ БӨГЛӨНӨ ҮҮ"
 fi
 
-# ----------------------------------------------------------- 13. дүгнэлт ----
+# ----------------------------------------------------------- 14. дүгнэлт ----
 printf '\n%s%s%s\n' "$C_B" "════════════════════════════════════════════════════" "$C_0"
 if (( DRY_RUN )); then
   printf '%sDRY RUN дууслаа — юу ч өөрчлөгдөөгүй.%s\n' "$C_Y" "$C_0"

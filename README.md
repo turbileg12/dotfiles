@@ -19,6 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/turbileg12/dotfiles/main/bootstrap.
 ~/.dotfiles/bootstrap.sh --desktop     # desktop гэж албадах
 ~/.dotfiles/bootstrap.sh --no-fonts
 ~/.dotfiles/bootstrap.sh --skip-brew   # package суулгацгүйгээр зөвхөн config
+~/.dotfiles/bootstrap.sh --no-claude    # Claude Code CLI-г суулгахгүй
 ```
 
 Скрипт нь **дахин дахин ажиллуулж болно**. Байгаа файлыг дарж бичихийн өмнө
@@ -69,6 +70,9 @@ FONT_FAMILY="JetBrainsMono Nerd Font" # fontconfig / gnome-terminal-ын нэр
 - **nvim** — vim-plug + `init.vim` дэх бүх 20 plugin (`PlugInstall --sync`),
   дараа нь treesitter parser-ууд (`java xml yaml json sql`).
 - **tmux** — tpm + dracula, tmux-resurrect, tmux-continuum.
+- **Claude Code CLI** — native installer-ээр (`~/.local/share/claude/versions/`,
+  npm/brew биш). `--no-claude` гэж алгасаж болно. Нэвтрэлт нь машин тус бүрд
+  гараар: эхний удаа `claude` гэж ажиллуулна.
 - **Package-ууд** — `Brewfile` (nvim, tmux, fzf, bat, rg, fd, jq… + `jdtls`,
   `typescript-language-server`).
 
