@@ -313,7 +313,18 @@ if have nvim; then
   fi
   run nvim --headless '+PlugInstall --sync' +qa 2>/dev/null || warn "PlugInstall бүрэн дуусаагүй"
   ok "nvim plugin-ууд суув"
-  run nvim --headless '+TSUpdateSync' +qa 2>/dev/null || warn "TSUpdate алгасагдав (compiler байхгүй байж болно)"
+  # ЖИЧ: `TSUpdateSync` нь ЗӨВХӨН аль хэдийн суусан parser-ыг шинэчилдэг тул
+  # цоо шинэ машин дээр юу ч хийхгүй. Шинээр суулгахад `TSInstallSync` хэрэгтэй.
+  # Үүнгүй бол parser-ууд эхний удаа nvim нээх үед л зэрэг татагдаж эхэлдэг.
+  if have cc || have gcc || have clang || [[ -n ${CC:-} ]]; then
+    if run nvim --headless '+TSInstallSync java xml yaml json sql' +qa 2>/dev/null; then
+      ok "treesitter parser-ууд суув (java xml yaml json sql)"
+    else
+      warn "treesitter parser-ууд суусангүй — эхний удаа nvim нээхэд өөрөө татна"
+    fi
+  else
+    skip "treesitter parser-ууд (C compiler алга)"
+  fi
 else
   warn "nvim байхгүй тул plugin суулгацыг алгаслаа"
 fi
