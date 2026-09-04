@@ -155,6 +155,25 @@ if [[ $SELF_DIR != "$DOTFILES" ]]; then
 fi
 ok "repo: $DOTFILES"
 
+# ~/.zshrc нь $DOTFILES-г default-оор $HOME/.dotfiles гэж үздэг ба shell/env.zsh,
+# fzf.zsh г.м-ийг эндээс source хийдэг. Repo өөр байрлалд (жнь ~/diplom/...)
+# clone/copy хийгдсэн бол дараагийн zsh нэвтрэлт эдгээр файлыг олохгүй бөгөөд
+# brew/nvim/fzf PATH-д ороогүйн улмаас "ажиллахгүй" мэт харагдана. Тиймээс
+# $HOME/.dotfiles-г жинхэнэ repo руу тогтвортой symlink болгоно.
+if [[ $DOTFILES != "$HOME/.dotfiles" ]]; then
+  if [[ -L $HOME/.dotfiles && "$(readlink "$HOME/.dotfiles")" == "$DOTFILES" ]]; then
+    ok "~/.dotfiles → repo (аль хэдийн холбоотой)"
+  else
+    if [[ -e $HOME/.dotfiles || -L $HOME/.dotfiles ]]; then
+      run mkdir -p "$BACKUP_DIR"
+      run mv "$HOME/.dotfiles" "$BACKUP_DIR/.dotfiles"
+      warn "~/.dotfiles → нөөцөд зөөв"
+    fi
+    run ln -sfn "$DOTFILES" "$HOME/.dotfiles"
+    ok "~/.dotfiles → ${DOTFILES/#$HOME/\~}"
+  fi
+fi
+
 # ------------------------------------------------------- 3. Homebrew --------
 step "Homebrew"
 brew_shellenv() {
