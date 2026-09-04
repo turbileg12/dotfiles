@@ -13,6 +13,11 @@ brew "jq"
 brew "tree"
 brew "htop"
 
+# ~/.gitconfig нь GitHub-ийн credential.helper-ийг `gh auth git-credential` гэж
+# заадаг. gh байхгүй бол git push/pull "could not read Username" гэж унадаг.
+# Суулгасны дараа нэг удаа `gh auth login` хийнэ.
+brew "gh"
+
 # nvim-ийн LSP: init.vim дэх `vim.lsp.enable({'jdtls','ts_ls'})` эдгээрийг
 # PATH дээр байхыг шаарддаг. Байхгүй бол `gd` (тодорхойлолт руу үсрэх) ажиллахгүй.
 # tagbar (<F8>) нь ctags-гүйгээр "Exuberant ctags not found!" гэж унадаг.
